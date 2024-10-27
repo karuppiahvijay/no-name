@@ -1,20 +1,22 @@
-FROM node:14
+# Use official Node.js image to build the app
+FROM node:16 AS build
 
-# Create app directory
+# Set working directory inside container
 WORKDIR /app
 
-# Install app dependencies
+# Copy package files and install dependencies
 COPY package*.json ./
 RUN npm install
 
-# Bundle app source
+# Copy all source code to the container
 COPY . .
 
-# Build the Backstage app
+# Build the application
 RUN npm run build
 
-# Expose the port the app runs on
-EXPOSE 7000
+# Use a lightweight web server to serve the built files
+FROM nginx:alpine
+COPY --from=build /app/dist /usr/share/nginx/html
 
-# Start the app
-CMD ["npm", "start"]
+# Expose port 80 for serving the Vue app
+EXPOSE 80
