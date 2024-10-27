@@ -1,0 +1,56 @@
+# PostgreSQL configuration
+postgres:
+  replicaCount: 1
+  image:
+    repository: postgres
+    tag: "13"
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 5432
+  env:
+    POSTGRES_USER: "stagingpostgres"
+    POSTGRES_PASSWORD: "password"
+    POSTGRES_DB: "people"
+
+# Backend configuration
+backend:
+  replicaCount: 1
+  image:
+    repository: vijay7823/backend-image
+    tag: latest-staging
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 3000
+    targetPort: 3000
+  env:
+    PGUSER: "stagingpostgres"
+    PGPASSWORD: "password"
+    PGDATABASE: "people"
+    PGHOST: "myapp-postgres-service"
+    PGPORT: "5432"
+  labels:
+    environment: staging
+
+# Frontend configuration
+frontend:
+  replicaCount: 1
+  image:
+    repository: vijay7823/frontend-image
+    tag: latest-staging
+    pullPolicy: IfNotPresent
+  service:
+    type: NodePort
+    port: 80
+    targetPort: 80
+    nodePort: 30007
+  labels:
+    version: "2"
+    environment: staging
+
+# Common labels for the staging environment
+commonLabels:
+  environment: staging
+
+

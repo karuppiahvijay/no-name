@@ -1,0 +1,31 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: backend
+spec:
+  replicas: {{ .Values.backend.replicaCount }}
+  selector:
+    matchLabels:
+      app: backend
+  template:
+    metadata:
+      labels:
+        app: backend
+        version: latest # Corrected to ensure it pulls from values
+    spec:
+      containers:
+        - name: backend
+          image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+          ports:
+            - containerPort: {{ .Values.backend.service.port }}
+          env:
+            - name: PGUSER
+              value: "{{ .Values.backend.env.PGUSER }}"
+            - name: PGPASSWORD
+              value: "{{ .Values.backend.env.PGPASSWORD }}"
+            - name: PGDATABASE
+              value: "{{ .Values.backend.env.PGDATABASE }}"
+            - name: PGHOST
+              value: "{{ .Values.backend.env.PGHOST }}"
+            - name: PGPORT
+              value: "{{ .Values.backend.env.PGPORT }}"

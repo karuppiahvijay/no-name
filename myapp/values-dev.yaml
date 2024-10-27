@@ -1,0 +1,54 @@
+# PostgreSQL configuration for development
+postgres:
+  replicaCount: 1
+  image:
+    repository: postgres
+    tag: "13"  # You might keep this the same, or use a dev-specific tag
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 5432
+  env:
+    POSTGRES_USER: "devuser"  # Change to a dev-specific user
+    POSTGRES_PASSWORD: "password"  # Change to a dev-specific password
+    POSTGRES_DB: "people"  # Change to a dev-specific database
+
+# Backend configuration for development
+backend:
+  replicaCount: 1
+  image:
+    repository: vijay7823/backend-image
+    tag: latest  # Use a specific tag for the development version
+    pullPolicy: IfNotPresent
+  service:
+    type: ClusterIP
+    port: 3000
+    targetPort: 3000
+  env:
+    PGUSER: "devuser"  # Change to match the dev PostgreSQL user
+    PGPASSWORD: "password"  # Change to match the dev PostgreSQL password
+    PGDATABASE: "people"  # Change to match the dev PostgreSQL database
+    PGHOST: "myapp-postgres-service"
+    PGPORT: "5432"
+
+# Frontend configuration for development
+frontend:
+  replicaCount: 1
+  image:
+    repository: vijay7823/frontend-image
+    tag: latest  # Use a specific tag for the development version
+    pullPolicy: IfNotPresent
+  service:
+    type: NodePort
+    port: 80
+    targetPort: 80
+    nodePort: 30005
+  # Optionally change the version label for clarity
+
+# Common labels (if needed)
+commonLabels:
+  environment: "development"  # Add an environment label for clarity
+
+# Ingress configuration (if needed)
+ingress:
+  enabled: false  # Keep it disabled for local/dev environments; change if needed.
